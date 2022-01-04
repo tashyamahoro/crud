@@ -80,10 +80,21 @@
                 $vnama =$data['nama'];
                 $vtanggal_lahir =$data['tanggal_lahir'];
                 $valamat =$data['alamat'];
-
+            }
+        }
+        else if ($_GET['hal'] == "hapus")
+        {
+            //Persiapan hapus data
+            $hapus = mysqli_query($koneksi, "DELETE  FROM  tkwp WHERE id_kwp = '$_GET[id]' ");
+            if($hapus){
+                echo "<script>
+                        alert('Hapus Data Suksess!!');
+                        document.location='index.php';
+                    </script>";   
             }
         }
     }
+
 ?>
 
 <!DOCTYPE html>
@@ -157,7 +168,7 @@
                 <td><?=$data ['alamat']?></td>
                 <td>
                     <a href="index.php?hal=edit&id=<?=$data['id_kwp']?>" class="btn btn-warning"> Edit </a>
-                    <a href="#" class="btn btn-danger"> Hapus </a>
+                    <a href="index.php?hal=hapus&id=<?=$data['id_kwp']?>" onclick="return confirm('Apakah yakin ingin menghapus data ini?')" class="btn btn-danger"> Hapus </a>
 
                 </td>
             </tr>

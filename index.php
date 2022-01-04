@@ -10,26 +10,79 @@
     //jika tombol simpan diklik
     if(isset($_POST['bSimpan']))
     {
-        $simpan = mysqli_query($koneksi,"INSERT INTO tkwp (nik, nama, tanggal_lahir, alamat)
+        //Pengujian Apakah data akan diedit atau disimpan baru
+        if($_GET['hal'] == "edit")
+        {
+            //Data akan diedit
+            $edit = mysqli_query($koneksi,"UPDATE tkwp set
+                                               nik = '$_POST[tNIK]',
+                                               nama = '$_POST[tNama]',
+                                               tanggal_lahir = '$_POST[tTanggal_Lahir]',
+                                               alamat = '$_POST[tAlamat]'
+                                            WHERE id_kwp = '$_GET[id]'
+                                          ");
+            if($edit) //jika edit sukses
+            {
+                echo "<script>
+                        alert('Edit data sukses!');
+                        document.location= 'index.php';
+                    </script>";
+            }
+            else
+            {
+                echo "<script>
+                        alert('Edit data GAGAL!!');
+                        sdocument.location= 'index.php';
+                    </script>"; 
+            }
+        }
+        else 
+        {
+            //Data akan disimpan baru
+            $simpan = mysqli_query($koneksi,"INSERT INTO tkwp (nik, nama, tanggal_lahir, alamat)
                                         VALUES ('$_POST[tNIK]',
                                                '$_POST[tNama]',
                                                '$_POST[tTanggal_Lahir]',
                                                '$_POST[tAlamat]')
                                         ");
-        if($simpan) //jika simpan sukses
-        {
-            echo "<script>
-                    alert('Simpan data sukses!');
-                    document.location= 'index.php';
-                 </script>";
+            if($simpan) //jika simpan sukses
+            {
+                echo "<script>
+                        alert('Simpan data sukses!');
+                        document.location= 'index.php';
+                    </script>";
+            }
+            else
+            {
+                echo "<script>
+                        alert('Simpan data GAGAL!!');
+                        document.location= 'index.php';
+                    </script>"; 
+            }
         }
-        else
+
+                               
+    }
+
+    //Pengujuian jika tombol edit atau hapus diklik
+    if(isset($_GET['hal']))
+    {
+        //Pengujian jika edit data
+        if($_GET['hal'] == "edit")
         {
-            echo "<script>
-            alert('Simpan data GAGAL!!');
-            document.location= 'index.php';
-         </script>"; 
-        }                       
+            //Tampilkan Data yang akan diedit
+            $tampil = mysqli_query($koneksi,"SELECT * FROM tkwp WHERE id_kwp ='$_GET[id]' ");
+            $data = mysqli_fetch_array($tampil);
+            if($data)
+            {
+                //Jika data ditemukan, maka data ditampung dulu ke dalam variabel
+                $vnik =$data['nik'];
+                $vnama =$data['nama'];
+                $vtanggal_lahir =$data['tanggal_lahir'];
+                $valamat =$data['alamat'];
+
+            }
+        }
     }
 ?>
 
@@ -54,19 +107,19 @@
         <form method="post" action="">
             <div class="form-group">
                 <label>NIK</label>
-                <input type="text" name="tNIK" class="form-control" placeholder="Input NIK anda disini!" required>
+                <input type="text" name="tNIK" value= "<?=@$vnik?>" class="form-control" placeholder="Input NIK anda disini!" required>
             </div>
             <div class="form-group">
                 <label>Nama</label>
-                <input type="text" name="tNama" class="form-control" placeholder="Input Nama anda disini!" required>
+                <input type="text" name="tNama" value= "<?=@$vnama?>" class="form-control" placeholder="Input Nama anda disini!" required>
             </div>
             <div class="form-group">
                 <label>Tanggal Lahir</label>
-                <input type="text" name="tTanggal Lahir" class="form-control" placeholder="Input Tanggal Lahir anda disini!" required>
+                <input type="text" name="tTanggal Lahir"  value= "<?=@$vtanggal_lahir?>" class="form-control" placeholder="Input Tanggal Lahir anda disini!" required>
             </div>
             <div class="form-group">
                 <label>Alamat</label>
-                <textarea class="form-control" name="tAlamat" placeholder="Input Alamat anda disini!"></textarea>
+                <textarea class="form-control" name="tAlamat" placeholder="Input Alamat anda disini!"><?=@$valamat?></textarea>
             </div>
 
             <button type="submit" class="btn btn-success"name="bSimpan">Simpan</button>
@@ -103,7 +156,7 @@
                 <td><?=$data ['tanggal_lahir']?></td>
                 <td><?=$data ['alamat']?></td>
                 <td>
-                    <a href="#" class="btn btn-warning"> Edit </a>
+                    <a href="index.php?hal=edit&id=<?=$data['id_kwp']?>" class="btn btn-warning"> Edit </a>
                     <a href="#" class="btn btn-danger"> Hapus </a>
 
                 </td>
